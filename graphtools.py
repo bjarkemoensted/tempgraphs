@@ -41,6 +41,7 @@ class TemporalGraph(nx.Graph):
     def add_nodes_from(self, _iterable):
         super(TemporalGraph, self).add_nodes_from(_iterable)
         self._fix()
+#    def add_node  #!!!
     #TODO single node. For doven nu...
     
     def draw(self, filename = None, show = True, **kwargs):
@@ -63,7 +64,7 @@ class TemporalGraph(nx.Graph):
         node = np.random.choice(self.nodes())
         self.infect(node)
     
-    def run(self):
+    def run_step(self):
         for node in self.infected_nodes:
             for neighbor in self.neighbors_iter(node):
                 # Infect them
@@ -71,7 +72,6 @@ class TemporalGraph(nx.Graph):
                     self.queue.append((self.infect, neighbor))
                 #
             #
-        self.update()
     
     def update(self):
         while self.queue:
@@ -79,7 +79,13 @@ class TemporalGraph(nx.Graph):
             f(args)
         #
     
-    def is_extinct(self):
+    def run_all(self):
+        pass  #TODO denne her skal lave run_step + update indtil alle dør eller timelinen slutter
+    
+    def components_are_homogenous(self):
+        '''Determines whether the nodes in each individual component of the
+        have the same status, i.e. if it's true for every component that all
+        nodes are either infected or healthy.'''
         components = nx.connected_component_subgraphs(self)
         for component in components:
             nodes = component.nodes()
@@ -104,7 +110,6 @@ def main():
         G.draw(node_size = 50, show = False, filename = 'frames/f%03d' % counter)
         counter += 1
         G.run()
-        G.update()
 
 
 if __name__ == '__main__':
